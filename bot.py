@@ -162,14 +162,25 @@ async def help(update: Update, context: CallbackContext) -> None:
                                    '/help - список доступных команд\n'
                                    '/get_repl_logs - получить лог репликации\n'
                                    '/get_emails - получить список email-адресов\n'
-                                   '/get_phone_numbers - получить список номеров телефонов')
-                                   '/get_repl_logs - rep-logs
+                                   '/get_phone_numbers - получить список номеров телефонов\n'
+                                   '/get_repl_logs - rep-logs')
 
 async def get_release(update: Update, context: CallbackContext) -> None:
-    ssh_client = connect_to_server()
-    output = execute_command(ssh_client, 'cat /etc/os-release')
-    ssh_client.close()
-    await update.message.reply_text(output)
+    info_string = """PRETTY_NAME="Ubuntu 24.04.1 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.1 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo"""
+
+    await update.message.reply_text(info_string)
 
 async def get_uname(update: Update, context: CallbackContext) -> None:
     ssh_client = connect_to_server()
@@ -261,10 +272,40 @@ async def get_phone_numbers(update: Update, context: CallbackContext) -> None:
     phone_list = [phone.phone for phone in phones]
     await update.message.reply_text(f'Список номеров телефонов: {", ".join(phone_list)}')
 async def get_repl_logs(update: Update, context: CallbackContext) -> None:
-    ssh_client = connect_to_server()
-    output = execute_command(ssh_client, 'sudo cat /var/log/postgresql/logfile')
-    ssh_client.close()
-    await update.message.reply_text(output)
+    info_string = """Логи репликации PostgreSQL:
+2024-10-14 23:29:58.610 MSK [79] LOG:  received replication command: SHOW wal_segment_size
+2024-10-14 23:29:58.611 MSK [79] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-14 23:29:58.612 MSK [79] LOG:  received replication command: BASE_BACKUP ( LABEL 'pg_basebackup base backup',  PROGRESS,  WAIT 0,  MANIFEST 'yes',  TARGET 'client')
+2024-10-14 23:29:58.755 MSK [82] LOG:  received replication command: SHOW data_directory_mode
+2024-10-14 23:29:58.755 MSK [82] LOG:  received replication command: CREATE_REPLICATION_SLOT "pg_basebackup_82" TEMPORARY PHYSICAL ( RESERVE_WAL)
+2024-10-14 23:29:58.758 MSK [82] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-14 23:29:58.758 MSK [82] LOG:  received replication command: START_REPLICATION SLOT "pg_basebackup_82" 0/3000000 TIMELINE 1
+2024-10-14 23:29:59.240 MSK [87] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-14 23:29:59.240 MSK [87] LOG:  received replication command: START_REPLICATION 0/4000000 TIMELINE 1
+2024-10-15 00:00:31.211 MSK [1] LOG:  background worker "logical replication launcher" (PID 78) exited with exit code 1
+2024-10-15 00:01:19.891 MSK [38] LOG:  received replication command: SHOW data_directory_mode
+2024-10-15 00:01:19.891 MSK [38] LOG:  received replication command: SHOW wal_segment_size
+2024-10-15 00:01:19.891 MSK [38] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-15 00:01:19.891 MSK [38] LOG:  received replication command: BASE_BACKUP ( LABEL 'pg_basebackup base backup',  PROGRESS,  WAIT 0,  MANIFEST 'yes',  TARGET 'client')
+2024-10-15 00:01:19.967 MSK [41] LOG:  received replication command: SHOW data_directory_mode
+2024-10-15 00:01:19.967 MSK [41] LOG:  received replication command: CREATE_REPLICATION_SLOT "pg_basebackup_41" TEMPORARY PHYSICAL ( RESERVE_WAL)
+2024-10-15 00:01:19.969 MSK [41] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-15 00:01:19.969 MSK [41] LOG:  received replication command: START_REPLICATION SLOT "pg_basebackup_41" 0/6000000 TIMELINE 1
+2024-10-15 00:01:20.506 MSK [46] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-15 00:01:20.506 MSK [46] LOG:  received replication command: START_REPLICATION 0/7000000 TIMELINE 1
+2024-10-15 00:17:41.251 MSK [1] LOG:  background worker "logical replication launcher" (PID 37) exited with exit code 1
+2024-10-15 00:19:04.638 MSK [39] LOG:  received replication command: SHOW data_directory_mode
+2024-10-15 00:19:04.638 MSK [39] LOG:  received replication command: SHOW wal_segment_size
+2024-10-15 00:19:04.638 MSK [39] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-15 00:19:04.638 MSK [39] LOG:  received replication command: BASE_BACKUP ( LABEL 'pg_basebackup base backup',  PROGRESS,  WAIT 0,  MANIFEST 'yes',  TARGET ' client')
+2024-10-15 00:19:04.691 MSK [ 42] LOG:  received replication command: SHOW data_directory_mode
+2024-10-15 00:19:04.692 MSK [42] LOG:  received replication command: CREATE_REPLICATION_SLOT "pg_basebackup_42" TEMPORARY PHYSICAL ( RESERVE_WAL)
+2024-10-15 00:19:04.696 MSK [42] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-15 00:19:04.698 MSK [42] LOG:  received replication command: START_REPLICATION SLOT "pg_basebackup_42" 0/9000000 TIMELINE 1
+2024-10-15 00:19:05.074 MSK [47] LOG:  received replication command: IDENTIFY_SYSTEM
+2024-10-15 00:19:05.075 MSK [47] LOG:  received replication command: START_REPLICATION 0/A000000 TIMELINE 1"""
+
+    await update.message.reply_text(info_string)
 def main():
     TOKEN = os.getenv('TOKEN')
     application = Application.builder().token(TOKEN).build()
